@@ -1,0 +1,18 @@
+type Query {
+    getTrack(id: ID!): Track
+}
+
+type Mutation {
+    createTrack(track: TrackInput!): Track!
+}
+
+type Track {
+    id: ID
+    title: String
+    description: String
+}
+
+input TrackInput {
+    title: String!
+    description: String
+}

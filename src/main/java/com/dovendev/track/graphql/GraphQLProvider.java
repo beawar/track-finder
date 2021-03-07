@@ -1,0 +1,60 @@
+package com.dovendev.track.graphql;
+
+import com.dovendev.track.graphql.datafetchers.TrackDataFetcher;
+import graphql.GraphQL;
+import graphql.schema.GraphQLSchema;
+import graphql.schema.idl.RuntimeWiring;
+import graphql.schema.idl.SchemaGenerator;
+import graphql.schema.idl.SchemaParser;
+import graphql.schema.idl.TypeDefinitionRegistry;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
+import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
+
+@Component
+public class GraphQLProvider {
+    private GraphQL graphQL;
+
+    @Autowired
+    private TrackDataFetcher trackDataFetchers;
+
+    @Bean
+    public GraphQL graphQL() {
+        return graphQL;
+    }
+
+    @PostConstruct
+    public void init() throws IOException {
+        try (InputStream schema = getClass().getClassLoader().getResourceAsStream("schema.graphql")) {
+            if (schema == null) {
+                throw new IOException("Schema not found!");
+            }
+            String schemaStr = new String(schema.readAllBytes(), StandardCharsets.UTF_8);
+            GraphQLSchema graphQLSchema = buildSchema(schemaStr);
+            this.graphQL = GraphQL.newGraphQL(graphQLSchema).build();
+        }
+    }
+
+    private GraphQLSchema buildSchema(String sdl) {
+        TypeDefinitionRegistry typeRegistry = new SchemaParser().parse(sdl);
+        RuntimeWiring runtimeWiring = buildWiring();
+        SchemaGenerator schemaGenerator = new SchemaGenerator();
+        return schemaGenerator.makeExecutableSchema(typeRegistry, runtimeWiring);
+    }
+
+    private RuntimeWiring buildWiring() {
+        return RuntimeWiring.newRuntimeWiring()
+                .type(newTypeWiring("Query")
+                        .dataFetcher("getTrack", trackDataFetchers.getTrackDataFetcher()))
+                .type(newTypeWiring("Mutation")
+                        .dataFetcher("createTrack", trackDataFetchers.createTrackDataFetcher()))
+                .build();
+    }
+}
