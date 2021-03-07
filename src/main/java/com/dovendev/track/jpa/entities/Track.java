@@ -5,6 +5,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Table(name = "tracks")
@@ -26,12 +27,12 @@ public class Track {
     @JoinColumn(name = "track_id", referencedColumnName = "id")
     private List<TrackLink> links;
 
-    public static Track fromMap(Map<String, Object> map) {
+    public static Track fromMap(@NotNull Map<String, Object> map) {
         Track track = new Track();
         track.setTitle(String.valueOf(map.get("title")));
         track.setDescription(Objects.toString(map.get("description")));
         track.setLength(Double.parseDouble(String.valueOf(map.getOrDefault("length", 0))));
-        track.setTime(Time.valueOf(String.valueOf(map.get("time"))));
+        track.setTime(new Time(Integer.parseInt(String.valueOf(map.getOrDefault("time", 0)))));
         track.setAltitudeDifference(Integer.parseInt(String.valueOf(map.getOrDefault("altitude_difference", 0))));
         track.setLinks(new ArrayList<>());
         if (map.containsKey("links") && map.get("links") instanceof List<?>) {

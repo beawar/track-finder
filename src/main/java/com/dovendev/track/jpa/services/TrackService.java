@@ -18,7 +18,7 @@ public class TrackService {
     return track;
   }
 
-  public Track findById(String id) {
-    return trackRepository.findById(Integer.parseInt(id)).orElse(null);
+  public Track findById(Long id) {
+    return trackRepository.findById(id).orElse(null);
   }
 }

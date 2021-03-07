@@ -15,7 +15,7 @@ public class TrackDataFetcher {
     public DataFetcher<Track> getTrackDataFetcher() {
         return dataFetchingEnvironment -> {
             String trackId = dataFetchingEnvironment.getArgument("id");
-            return trackService.findById(trackId);
+            return trackService.findById(Long.parseLong(trackId));
         };
     }
 
