@@ -1,7 +1,11 @@
 package com.dovendev.track.jpa.entities;
 
-import javax.persistence.*;
-import java.util.Map;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "track_links")
@@ -13,6 +17,8 @@ public class TrackLink {
     private long trackId;
 
     private String link;
+
+    public TrackLink() { }
 
     public TrackLink(String link) {
         this.link = link;

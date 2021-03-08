@@ -10,9 +10,15 @@ type Track {
     id: ID
     title: String
     description: String
+    links: [Link]
 }
 
 input TrackInput {
     title: String!
     description: String
+}
+
+type Link {
+    id: ID
+    link: String
 }
