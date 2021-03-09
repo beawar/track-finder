@@ -4,14 +4,6 @@ plugins {
 	id 'java'
 }
 
-group = 'com.dovendev'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '15'
-
-repositories {
-	mavenCentral()
-}
-
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -24,4 +16,37 @@ dependencies {
 
 test {
 	useJUnitPlatform()
+}
+
+allprojects{
+	apply plugin: 'java'
+	apply plugin: 'io.spring.dependency-management'
+	apply plugin: 'org.springframework.boot'
+
+	group = 'com.dovendev'
+	version = '0.0.1-SNAPSHOT'
+	sourceCompatibility = '15'
+
+	repositories {
+		mavenCentral()
+	}
+}
+
+subprojects {
+	afterEvaluate {
+		plugins.withType(JavaPlugin).configureEach {
+			java {
+				modularity.inferModulePath = true
+			}
+
+			tasks.withType(JavaCompile) {
+				doFirst {
+					options.compilerArgs = [
+							'--module-path', classpath.asPath,
+					]
+					classpath = files()
+				}
+			}
+		}
+	}
 }
