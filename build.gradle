@@ -4,22 +4,28 @@ plugins {
 	id 'java'
 }
 
-group = 'com.dovendev'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '15'
-
-repositories {
-	mavenCentral()
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly project(':graphql')
 }
 
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'com.graphql-java:graphql-java-spring-boot-starter-webmvc:2.0'
-	implementation 'org.jetbrains:annotations:20.1.0'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+allprojects {
+	group = 'com.dovendev'
+	version = '0.0.1-SNAPSHOT'
+	sourceCompatibility = '15'
+
+	repositories {
+		mavenCentral()
+	}
+}
+
+subprojects {
+	apply plugin: 'java'
+	apply plugin: 'io.spring.dependency-management'
+	apply plugin: 'org.springframework.boot'
+
 }
 
 test {
