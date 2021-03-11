@@ -12,3 +12,6 @@ bootJar {
 jar {
     enabled = true
 }
+
+// required to make gradle work with java modules
+ext.moduleName = 'track.finder.persistence'
