@@ -13,9 +13,7 @@ public class TrackService {
   }
 
   public Track save(Track track) {
-    trackRepository.save(track);
-    // TODO retrieve ID
-    return track;
+    return trackRepository.save(track);
   }
 
   public Track findById(Long id) {
