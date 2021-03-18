@@ -1,10 +1,7 @@
 package com.dovendev.track.jpa.entities;
 
-import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +35,8 @@ public class Track {
   @Column(name = "altitude_difference")
   private int altitudeDifference;
 
-  private OffsetDateTime upload_time;
+  @Column(name = "upload_time")
+  private OffsetDateTime uploadTime;
   @OneToOne private Activity activity;
 
   @OneToMany(cascade = CascadeType.ALL)
@@ -50,11 +48,10 @@ public class Track {
     track.setTitle(String.valueOf(map.get("title")));
     track.setDescription(Objects.toString(map.get("description"), null));
     track.setLength(Double.parseDouble(String.valueOf(map.getOrDefault("length", 0))));
-    LocalTime parsedDate = LocalTime.parse("23:14:36", DateTimeFormatter.ISO_LOCAL_TIME);
-    track.setTime(OffsetTime.of(parsedDate, ZoneOffset.UTC));
+    track.setTime((OffsetTime) map.getOrDefault("time", "00:00:00Z"));
     track.setAltitudeDifference(
-        Integer.parseInt(String.valueOf(map.getOrDefault("altitude_difference", 0))));
-    track.setUpload_time(OffsetDateTime.now());
+        Integer.parseInt(String.valueOf(map.getOrDefault("altitudeDifference", 0))));
+    track.setUploadTime(OffsetDateTime.now());
     track.setLinks(new ArrayList<>());
     if (map.containsKey("links") && map.get("links") instanceof List<?>) {
       List<TrackLink> links =
@@ -127,12 +124,12 @@ public class Track {
     this.altitudeDifference = altitudeDifference;
   }
 
-  public OffsetDateTime getUpload_time() {
-    return upload_time;
+  public OffsetDateTime getUploadTime() {
+    return uploadTime;
   }
 
-  public void setUpload_time(OffsetDateTime upload_time) {
-    this.upload_time = upload_time;
+  public void setUploadTime(OffsetDateTime uploadTime) {
+    this.uploadTime = uploadTime;
   }
 
   public Activity getActivity() {
@@ -180,7 +177,7 @@ public class Track {
     if (!Objects.equals(time, track.time)) {
       return false;
     }
-    if (!Objects.equals(upload_time, track.upload_time)) {
+    if (!Objects.equals(uploadTime, track.uploadTime)) {
       return false;
     }
     if (!Objects.equals(activity, track.activity)) {

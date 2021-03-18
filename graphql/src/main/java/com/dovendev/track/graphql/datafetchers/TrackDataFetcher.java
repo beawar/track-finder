@@ -4,6 +4,7 @@ package com.dovendev.track.graphql.datafetchers;
 import com.dovendev.track.jpa.entities.Track;
 import com.dovendev.track.jpa.services.TrackService;
 import graphql.schema.DataFetcher;
+import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -33,5 +34,9 @@ public class TrackDataFetcher {
             String trackId = dataFetchingEnvironment.getArgument("id");
             return trackService.delete(trackService.findById(Long.parseLong(trackId)));
         };
+    }
+
+    public DataFetcher<List<Track>> findAllTrackDataFetcher() {
+        return dataFetchingEnvironment -> trackService.findAll();
     }
 }

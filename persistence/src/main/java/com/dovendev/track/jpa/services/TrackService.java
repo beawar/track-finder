@@ -2,6 +2,9 @@ package com.dovendev.track.jpa.services;
 
 import com.dovendev.track.jpa.entities.Track;
 import com.dovendev.track.jpa.repositories.TrackRepository;
+import java.util.List;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,5 +26,10 @@ public class TrackService {
   public Track delete(Track track){
     trackRepository.delete(track);
     return track;
+  }
+
+  public List<Track> findAll(){
+    List<Track> tracks = trackRepository.findAll(Sort.by(Direction.DESC, "uploadTime"));
+    return tracks;
   }
 }

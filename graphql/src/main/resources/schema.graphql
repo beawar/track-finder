@@ -4,6 +4,7 @@ scalar Time
 type Query {
     #track query
     getTrack(id: ID!): Track
+    findAll: [Track]
 
     #link query
     getLink(id: ID!): Link
@@ -25,8 +26,9 @@ type Track {
     description: String
     length: Float
     time: Time
-    altitude_difference: Int
+    altitudeDifference: Int
     links: [Link]
+    uploadTime: DateTime
 }
 
 input TrackInput {
@@ -34,7 +36,7 @@ input TrackInput {
     description: String
     length: Float
     time: Time
-    altitude_difference: Int
+    altitudeDifference: Int
     links: [LinkInput]
 }
 
