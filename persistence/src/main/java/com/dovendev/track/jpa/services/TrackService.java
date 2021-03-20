@@ -3,6 +3,7 @@ package com.dovendev.track.jpa.services;
 import com.dovendev.track.jpa.entities.Track;
 import com.dovendev.track.jpa.repositories.TrackRepository;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,10 @@ public class TrackService {
   }
 
   public Track delete(Track track){
-    trackRepository.delete(track);
+    if (track != null) {
+      trackRepository.delete(track);
+    }
+
     return track;
   }
 

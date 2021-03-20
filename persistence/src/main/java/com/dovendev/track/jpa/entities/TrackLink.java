@@ -1,6 +1,7 @@
 package com.dovendev.track.jpa.entities;
 
 import java.util.Map;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -36,6 +37,24 @@ public class TrackLink {
 
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        TrackLink trackLink = (TrackLink) o;
+        return Objects.equals(id, trackLink.id) && Objects
+            .equals(trackId, trackLink.trackId) && Objects.equals(link, trackLink.link);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, trackId);
     }
 
     public void setId(Long id) {

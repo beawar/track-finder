@@ -14,9 +14,7 @@ public class TrackLinkService {
     }
 
     public TrackLink save(TrackLink trackLink) {
-        trackLinkRepository.save(trackLink);
-        // TODO retrieve ID
-        return trackLink;
+        return trackLinkRepository.save(trackLink);
     }
 
     public TrackLink findById(Long id) {
