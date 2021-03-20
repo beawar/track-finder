@@ -55,6 +55,8 @@ public class GraphQLProvider {
                 .scalar(ExtendedScalars.DateTime)
                 .type(newTypeWiring("Query")
                         .dataFetcher("getTrack", trackDataFetchers.getTrackDataFetcher()))
+                .type(newTypeWiring("Query")
+                    .dataFetcher("findAll", trackDataFetchers.findAllTrackDataFetcher()))
                 .type(newTypeWiring("Mutation")
                         .dataFetcher("createTrack", trackDataFetchers.createTrackDataFetcher()))
                 .type(newTypeWiring("Mutation")
