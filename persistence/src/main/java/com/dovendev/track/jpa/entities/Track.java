@@ -37,6 +37,7 @@ public class Track {
 
   @Column(name = "upload_time")
   private OffsetDateTime uploadTime;
+
   @OneToOne private Activity activity;
 
   @OneToMany(cascade = CascadeType.ALL)
@@ -156,7 +157,7 @@ public class Track {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-
+    
     Track track = (Track) o;
 
     if (Double.compare(track.length, length) != 0) {
