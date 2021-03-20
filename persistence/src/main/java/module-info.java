@@ -7,5 +7,4 @@ module track.finder.persistence {
 
   exports com.dovendev.track.jpa.entities;
   exports com.dovendev.track.jpa.services;
-
 }

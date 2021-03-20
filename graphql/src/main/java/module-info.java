@@ -6,4 +6,5 @@ module track.finder.graphql {
   requires spring.web;
   requires com.fasterxml.jackson.databind;
   requires com.graphqljava;
+  requires graphql.java.extended.scalars;
 }

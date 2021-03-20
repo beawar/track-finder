@@ -18,6 +18,7 @@ allprojects {
 
     repositories {
         mavenCentral()
+        jcenter()
     }
 }
 
@@ -26,20 +27,48 @@ subprojects {
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'org.springframework.boot'
 
+    dependencies {
+        testImplementation 'org.mockito:mockito-core:2.+'
+    }
+
     afterEvaluate {
         compileJava {
             inputs.property('moduleName', moduleName)
             doFirst {
                 options.compilerArgs = [
-                        '--module-path', classpath.asPath
+                        '--module-path', classpath.asPath,
                 ]
                 classpath = files()
             }
         }
+
+        def patchArgs = "$moduleName=${tasks.compileJava.destinationDirectory.asFile.get().path}"
+
+        compileTestJava {
+            inputs.property('moduleName', moduleName)
+            doFirst {
+                options.compilerArgs = [
+                        '--module-path', classpath.asPath,
+                        '--patch-module', patchArgs
+                ]
+                classpath = files()
+            }
+        }
+
     }
 }
 
 
-test {
-    useJUnitPlatform()
+allprojects {
+    test {
+        useJUnitPlatform()
+
+        // Always run tests, even when nothing changed.
+        dependsOn 'cleanTest'
+
+        // Show test results.
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
+    }
 }

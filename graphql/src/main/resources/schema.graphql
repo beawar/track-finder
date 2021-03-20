@@ -1,24 +1,48 @@
+scalar DateTime
+scalar Time
+
 type Query {
+    #track query
     getTrack(id: ID!): Track
+
+    #link query
+    getLink(id: ID!): Link
 }
 
 type Mutation {
+    #track mutation
     createTrack(track: TrackInput!): Track!
+    deleteTrack(id: ID!): Track
+
+    #link mutation
+    createLink(track: TrackInput!): Track!
+    deleteLink(id: ID!): Track
 }
 
 type Track {
     id: ID
     title: String
     description: String
+    length: Float
+    time: Time
+    altitude_difference: Int
     links: [Link]
 }
 
 input TrackInput {
     title: String!
     description: String
+    length: Float
+    time: Time
+    altitude_difference: Int
+    links: [LinkInput]
 }
 
 type Link {
     id: ID
     link: String
+}
+
+input LinkInput {
+    link: String!
 }

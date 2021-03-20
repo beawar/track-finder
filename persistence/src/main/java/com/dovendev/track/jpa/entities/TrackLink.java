@@ -1,11 +1,13 @@
 package com.dovendev.track.jpa.entities;
 
+import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Table(name = "track_links")
@@ -14,7 +16,7 @@ public class TrackLink {
     private Long id;
 
     @Column(name = "track_id")
-    private long trackId;
+    private Long trackId;
 
     private String link;
 
@@ -24,18 +26,34 @@ public class TrackLink {
         this.link = link;
     }
 
-    //getter
+    public static TrackLink fromMap(@NotNull Map<String, Object> map) {
+        TrackLink trackLink = new TrackLink();
+        trackLink.setTrackId(map.get("track_id") != null ? Long.valueOf(String.valueOf(map.get("track_id"))) : null);
+        trackLink.setLink(String.valueOf(map.get("link")));
+
+        return trackLink;
+    }
+
     public Long getId() {
         return id;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getTrackId() {
+        return trackId;
+    }
+
+    public void setTrackId(Long trackId) {
+        this.trackId = trackId;
+    }
+
     public String getLink() {
         return link;
     }
 
-    // setter
-    public void setId(Long id) {
-        this.id = id;
-    }
     public void setLink(String link) {
         this.link = link;
     }

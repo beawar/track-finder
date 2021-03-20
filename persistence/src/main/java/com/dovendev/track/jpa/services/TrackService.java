@@ -13,12 +13,15 @@ public class TrackService {
   }
 
   public Track save(Track track) {
-    trackRepository.save(track);
-    // TODO retrieve ID
-    return track;
+    return trackRepository.save(track);
   }
 
   public Track findById(Long id) {
     return trackRepository.findById(id).orElse(null);
+  }
+
+  public Track delete(Track track){
+    trackRepository.delete(track);
+    return track;
   }
 }

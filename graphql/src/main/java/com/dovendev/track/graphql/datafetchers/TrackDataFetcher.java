@@ -28,4 +28,10 @@ public class TrackDataFetcher {
         };
     }
 
+    public DataFetcher<Track> deleteTrackDataFetcher() {
+        return dataFetchingEnvironment -> {
+            String trackId = dataFetchingEnvironment.getArgument("id");
+            return trackService.delete(trackService.findById(Long.parseLong(trackId)));
+        };
+    }
 }

@@ -4,6 +4,7 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
 import com.dovendev.track.graphql.datafetchers.TrackDataFetcher;
 import graphql.GraphQL;
+import graphql.scalars.ExtendedScalars;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
@@ -50,10 +51,14 @@ public class GraphQLProvider {
 
     private RuntimeWiring buildWiring() {
         return RuntimeWiring.newRuntimeWiring()
+                .scalar(ExtendedScalars.Time)
+                .scalar(ExtendedScalars.DateTime)
                 .type(newTypeWiring("Query")
                         .dataFetcher("getTrack", trackDataFetchers.getTrackDataFetcher()))
                 .type(newTypeWiring("Mutation")
                         .dataFetcher("createTrack", trackDataFetchers.createTrackDataFetcher()))
+                .type(newTypeWiring("Mutation")
+                        .dataFetcher("deleteTrack", trackDataFetchers.deleteTrackDataFetcher()))
                 .build();
     }
 }
