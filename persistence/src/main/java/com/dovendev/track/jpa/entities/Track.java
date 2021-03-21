@@ -1,7 +1,7 @@
 package com.dovendev.track.jpa.entities;
 
+import java.time.Duration;
 import java.time.OffsetDateTime;
-import java.time.OffsetTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -9,12 +9,12 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -28,20 +28,18 @@ public class Track {
   private Long id;
 
   private String title;
-  private String description;
+  @Lob private String description;
   private double length;
-  private OffsetTime time;
+  private Duration time;
 
-  @Column(name = "altitude_difference")
   private int altitudeDifference;
 
-  @Column(name = "upload_time")
   private OffsetDateTime uploadTime;
 
   @OneToOne private Activity activity;
 
   @OneToMany(cascade = CascadeType.ALL)
-  @JoinColumn(name = "track_id", referencedColumnName = "id")
+  @JoinColumn(name = "trackId", referencedColumnName = "id")
   private List<TrackLink> links;
 
   public static Track fromMap(@NotNull Map<String, Object> map) {
@@ -49,7 +47,7 @@ public class Track {
     track.setTitle(String.valueOf(map.get("title")));
     track.setDescription(Objects.toString(map.get("description"), null));
     track.setLength(Double.parseDouble(String.valueOf(map.getOrDefault("length", 0))));
-    track.setTime((OffsetTime) map.getOrDefault("time", "00:00:00Z"));
+    track.setTime(map.containsKey("time") ? Duration.parse(String.valueOf(map.get("time"))) : null);
     track.setAltitudeDifference(
         Integer.parseInt(String.valueOf(map.getOrDefault("altitudeDifference", 0))));
     track.setUploadTime(OffsetDateTime.now());
@@ -109,11 +107,11 @@ public class Track {
     this.length = length;
   }
 
-  public OffsetTime getTime() {
+  public Duration getTime() {
     return time;
   }
 
-  public void setTime(OffsetTime time) {
+  public void setTime(Duration time) {
     this.time = time;
   }
 
@@ -157,7 +155,7 @@ public class Track {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    
+
     Track track = (Track) o;
 
     if (Double.compare(track.length, length) != 0) {
