@@ -43,10 +43,10 @@ class TrackServiceTest {
   }
 
   @Test
-  void save() {
+  void create() {
     final Track trackInput = trackInput();
     when(trackRepository.save(trackInput)).thenReturn(optionalTrack().orElse(null));
-    Track track = trackService.save(trackInput);
+    Track track = trackService.create(trackInput);
     assertNotNull(track);
     assertNotNull(track.getId());
   }
@@ -76,12 +76,41 @@ class TrackServiceTest {
     assertEquals(trackList, trackList());
   }
 
+  @Test
+  void update() {
+    when(trackRepository.findById(1L)).thenReturn(optionalTrack());
+    when(trackRepository.save(trackUpdate())).thenReturn(optionalTrackUpdate().orElse(null));
+    Track trackUpdate = trackService.findById(1L);
+    trackUpdate.setTitle("Track 2");
+    Track track = trackService.create(trackUpdate);
+    assertNotNull(track);
+    assertNotNull(track.getId());
+    assertEquals(track.getTitle(), "Track 2");
+
+  }
+
   private Optional<Track> optionalTrack() {
     final Track track = new Track();
     track.setId(1L);
     track.setTitle("Track 1");
     track.setDescription("Description 1");
     return Optional.of(track);
+  }
+
+  private Optional<Track> optionalTrackUpdate() {
+    final Track track = new Track();
+    track.setId(1L);
+    track.setTitle("Track 2");
+    track.setDescription("Description 1");
+    return Optional.of(track);
+  }
+
+  private Track trackUpdate() {
+    final Track track = new Track();
+    track.setId(1L);
+    track.setTitle("Track 2");
+    track.setDescription("Description 1");
+    return track;
   }
 
   private Track trackInput() {

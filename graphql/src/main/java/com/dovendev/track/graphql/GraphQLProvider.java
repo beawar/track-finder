@@ -62,6 +62,8 @@ public class GraphQLProvider {
                         .dataFetcher("createTrack", trackDataFetchers.createTrackDataFetcher()))
                 .type(newTypeWiring("Mutation")
                         .dataFetcher("deleteTrack", trackDataFetchers.deleteTrackDataFetcher()))
+                .type(newTypeWiring("Mutation")
+                        .dataFetcher("updateTrack", trackDataFetchers.updateTrackDataFetcher()))
                 .build();
     }
 }

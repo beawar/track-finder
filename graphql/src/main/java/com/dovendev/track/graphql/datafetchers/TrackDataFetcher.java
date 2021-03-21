@@ -25,7 +25,7 @@ public class TrackDataFetcher {
         return dataFetchingEnvironment -> {
             Map<String, Object> trackInputMap = dataFetchingEnvironment.getArgument("track");
             Track track = Track.fromMap(trackInputMap);
-            return trackService.save(track);
+            return trackService.create(track);
         };
     }
 
@@ -38,5 +38,14 @@ public class TrackDataFetcher {
 
     public DataFetcher<List<Track>> findAllTrackDataFetcher() {
         return dataFetchingEnvironment -> trackService.findAll();
+    }
+
+    public DataFetcher updateTrackDataFetcher() {
+        return dataFetchingEnvironment -> {
+            Map<String, Object> trackUpdateMap = dataFetchingEnvironment.getArgument("track");
+            Track track = Track.fromMap(trackUpdateMap);
+            track.setId(Long.valueOf(dataFetchingEnvironment.getArgument("id")));
+            return trackService.update(track);
+        };
     }
 }

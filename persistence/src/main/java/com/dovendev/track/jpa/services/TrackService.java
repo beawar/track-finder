@@ -16,7 +16,7 @@ public class TrackService {
     this.trackRepository = trackRepository;
   }
 
-  public Track save(Track track) {
+  public Track create(Track track) {
     return trackRepository.save(track);
   }
 
@@ -35,5 +35,9 @@ public class TrackService {
   public List<Track> findAll(){
     List<Track> tracks = trackRepository.findAll(Sort.by(Direction.DESC, "uploadTime"));
     return tracks;
+  }
+
+  public Track update(Track track){
+    return trackRepository.save(track);
   }
 }
