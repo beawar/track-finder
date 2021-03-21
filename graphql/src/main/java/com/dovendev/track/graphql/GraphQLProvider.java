@@ -3,6 +3,7 @@ package com.dovendev.track.graphql;
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
 import com.dovendev.track.graphql.datafetchers.TrackDataFetcher;
+import com.dovendev.track.graphql.scalars.CustomScalars;
 import graphql.GraphQL;
 import graphql.scalars.ExtendedScalars;
 import graphql.schema.GraphQLSchema;
@@ -51,7 +52,7 @@ public class GraphQLProvider {
 
     private RuntimeWiring buildWiring() {
         return RuntimeWiring.newRuntimeWiring()
-                .scalar(ExtendedScalars.Time)
+                .scalar(CustomScalars.Duration)
                 .scalar(ExtendedScalars.DateTime)
                 .type(newTypeWiring("Query")
                         .dataFetcher("getTrack", trackDataFetchers.getTrackDataFetcher()))

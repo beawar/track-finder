@@ -1,10 +1,10 @@
 scalar DateTime
-scalar Time
+scalar Duration
 
 type Query {
     #track query
     getTrack(id: ID!): Track
-    findAll: [Track]
+    findAll: [Track!]!
 
     #link query
     getLink(id: ID!): Link
@@ -21,30 +21,32 @@ type Mutation {
 }
 
 type Track {
-    id: ID
-    title: String
+    id: ID!
+    title: String!
     description: String
     length: Float
-    time: Time
+    time: Duration
     altitudeDifference: Int
-    links: [Link]
-    uploadTime: DateTime
+    links: [Link!]!
+    uploadTime: DateTime!
 }
 
 input TrackInput {
     title: String!
     description: String
     length: Float
-    time: Time
+    time: Duration
     altitudeDifference: Int
-    links: [LinkInput]
+    links: [LinkInput!]
 }
 
 type Link {
-    id: ID
-    link: String
+    id: ID!
+    link: String!
+    mainLink: Boolean
 }
 
 input LinkInput {
     link: String!
+    mainLink: Boolean
 }
