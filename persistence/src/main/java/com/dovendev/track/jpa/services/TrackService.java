@@ -21,7 +21,7 @@ public class TrackService {
     this.trackRepository = trackRepository;
   }
 
-  public Track save(Track track) {
+  public Track create(Track track) {
     return trackRepository.save(track);
   }
 
@@ -79,5 +79,9 @@ public class TrackService {
       return page.toList();
     }
     return new ArrayList<>();
+  }
+
+  public Track update(Track track){
+    return trackRepository.save(track);
   }
 }

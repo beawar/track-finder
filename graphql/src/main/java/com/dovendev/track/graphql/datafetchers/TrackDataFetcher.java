@@ -23,8 +23,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TrackDataFetcher {
-    @Autowired
-    private TrackService trackService;
+  @Autowired private TrackService trackService;
 
     public DataFetcher<Track> getTrackDataFetcher() {
         return dataFetchingEnvironment -> {
@@ -41,16 +40,16 @@ public class TrackDataFetcher {
         };
     }
 
-    public DataFetcher<Track> deleteTrackDataFetcher() {
-        return dataFetchingEnvironment -> {
-            String trackId = dataFetchingEnvironment.getArgument("id");
-            return trackService.delete(trackService.findById(Long.parseLong(trackId)));
-        };
-    }
+  public DataFetcher<Track> deleteTrackDataFetcher() {
+    return dataFetchingEnvironment -> {
+      String trackId = dataFetchingEnvironment.getArgument("id");
+      return trackService.delete(trackService.findById(Long.parseLong(trackId)));
+    };
+  }
 
-    public DataFetcher<List<Track>> findAllTrackDataFetcher() {
-        return dataFetchingEnvironment -> trackService.findAll();
-    }
+  public DataFetcher<List<Track>> findAllTrackDataFetcher() {
+    return dataFetchingEnvironment -> trackService.findAll();
+  }
 
     public DataFetcher updateTrackDataFetcher() {
         return dataFetchingEnvironment -> {
