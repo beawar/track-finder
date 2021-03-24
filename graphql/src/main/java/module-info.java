@@ -8,5 +8,4 @@ module track.finder.graphql {
   requires com.graphqljava;
   requires graphql.java.extended.scalars;
   requires org.jetbrains.annotations;
-  requires graphql.java.tools;
 }

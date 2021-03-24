@@ -1,12 +1,11 @@
 package com.dovendev.track.graphql.datafetchers;
 
-
 import com.dovendev.track.graphql.connection.CursorUtil;
 import com.dovendev.track.jpa.entities.Track;
 import com.dovendev.track.jpa.services.TrackService;
-import graphql.kickstart.tools.GraphQLQueryResolver;
 import graphql.relay.Connection;
 import graphql.relay.DefaultConnection;
+import graphql.relay.DefaultConnectionCursor;
 import graphql.relay.DefaultEdge;
 import graphql.relay.DefaultPageInfo;
 import graphql.relay.Edge;
@@ -17,8 +16,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+
 @Component
-public class TrackDataFetcher implements GraphQLQueryResolver {
+public class TrackDataFetcher {
     @Autowired
     private TrackService trackService;
     private CursorUtil cursorUtil = new CursorUtil();
@@ -56,7 +56,7 @@ public class TrackDataFetcher implements GraphQLQueryResolver {
 
             List<Edge<Track>> edges = getTrackList(cursor)
                 .stream()
-                .map(track -> new DefaultEdge<>(track, cursorUtil.from(track.getId())))
+                .map(track -> new DefaultEdge<>(track, new DefaultConnectionCursor(track.getId().toString())))
                 .collect(Collectors.toUnmodifiableList());
 
             var pageInfo = new DefaultPageInfo(
@@ -72,6 +72,6 @@ public class TrackDataFetcher implements GraphQLQueryResolver {
         if (cursor == null){
             return trackService.findAll();
         }
-        return trackService.getTrackAfterCursor(Long.valueOf(cursorUtil.decode(cursor)));
+        return trackService.getTrackAfterCursor(Long.valueOf(cursor));
     }
 }
