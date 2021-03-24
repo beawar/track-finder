@@ -29,7 +29,11 @@ public class TrackService {
   }
 
   public List<Track> findAll(){
-    List<Track> tracks = trackRepository.findAll(Sort.by(Direction.DESC, "uploadTime"));
-    return tracks;
+    return trackRepository.findAll(Sort.by(Direction.DESC, "uploadTime"));
+  }
+
+  public List<Track> findByTitleDescription(String searchText) {
+    //List<Track> tracks = trackRepository.findDistinctByTitleIgnoreCaseContainingOrDescriptionIgnoreCaseContainingOrderByUploadTimeDesc(searchText, searchText);
+    return trackRepository.findByTitleDescription(searchText);
   }
 }

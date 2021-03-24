@@ -39,4 +39,11 @@ public class TrackDataFetcher {
     public DataFetcher<List<Track>> findAllTrackDataFetcher() {
         return dataFetchingEnvironment -> trackService.findAll();
     }
+
+    public DataFetcher<List<Track>> findByTitleDescriptionDataFetcher() {
+        return dataFetchingEnvironment -> {
+            String searchText = dataFetchingEnvironment.getArgument("searchText");
+            return trackService.findByTitleDescription(searchText);
+        };
+    }
 }

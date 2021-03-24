@@ -5,6 +5,7 @@ type Query {
     #track query
     getTrack(id: ID!): Track
     findAll: [Track!]!
+    findByTitleDescription(searchText: String!): [Track!]!
 
     #link query
     getLink(id: ID!): Link

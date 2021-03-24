@@ -58,6 +58,8 @@ public class GraphQLProvider {
                         .dataFetcher("getTrack", trackDataFetchers.getTrackDataFetcher()))
                 .type(newTypeWiring("Query")
                     .dataFetcher("findAll", trackDataFetchers.findAllTrackDataFetcher()))
+                .type(newTypeWiring("Query")
+                    .dataFetcher("findByTitleDescription", trackDataFetchers.findByTitleDescriptionDataFetcher()))
                 .type(newTypeWiring("Mutation")
                         .dataFetcher("createTrack", trackDataFetchers.createTrackDataFetcher()))
                 .type(newTypeWiring("Mutation")
