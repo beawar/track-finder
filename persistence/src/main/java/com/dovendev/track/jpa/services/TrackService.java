@@ -33,7 +33,6 @@ public class TrackService {
   }
 
   public List<Track> findByTitleDescription(String searchText) {
-    //List<Track> tracks = trackRepository.findDistinctByTitleIgnoreCaseContainingOrDescriptionIgnoreCaseContainingOrderByUploadTimeDesc(searchText, searchText);
     return trackRepository.findByTitleDescription(searchText);
   }
 }
