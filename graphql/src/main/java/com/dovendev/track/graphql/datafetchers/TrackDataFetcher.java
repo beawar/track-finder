@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class TrackDataFetcher {
     @Autowired
@@ -73,5 +72,12 @@ public class TrackDataFetcher {
             return trackService.findAll();
         }
         return trackService.getTrackAfterCursor(Long.valueOf(cursor));
+    }
+
+    public DataFetcher<List<Track>> findByTitleDescriptionDataFetcher() {
+        return dataFetchingEnvironment -> {
+            String searchText = dataFetchingEnvironment.getArgument("searchText");
+            return trackService.findByTitleDescription(searchText);
+        };
     }
 }
