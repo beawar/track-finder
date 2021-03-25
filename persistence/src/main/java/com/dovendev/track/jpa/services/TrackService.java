@@ -2,8 +2,10 @@ package com.dovendev.track.jpa.services;
 
 import com.dovendev.track.jpa.entities.Track;
 import com.dovendev.track.jpa.repositories.TrackRepository;
+import com.querydsl.core.support.OrderedQueryMetadata;
 import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -37,9 +39,15 @@ public class TrackService{
     return trackRepository.findByTitleDescription(searchText);
   }
 
-  public List<Track> getTrackAfterCursor(Long id){
-    return trackRepository.findAll().stream()
-        .dropWhile(track -> track.getId().compareTo(id) != 1)
-        .collect(Collectors.toUnmodifiableList());
+  public List<Track> findAll(int limit, Long cursor){
+    Pageable pageable = PageRequest.of(0, limit, Sort.by(Direction.DESC, "uploadTime"));
+    if(cursor == null){
+      return trackRepository.findBy(pageable);
+    }
+    return trackRepository.findByIdAfter(cursor, pageable);
   }
+
+ /* public List<Track> findOrdered(int limit, List<Sort> ){
+
+  }*/
 }

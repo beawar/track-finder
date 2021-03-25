@@ -18,7 +18,6 @@ import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Table(name = "tracks")
@@ -42,7 +41,7 @@ public class Track {
   @JoinColumn(name = "trackId", referencedColumnName = "id")
   private List<TrackLink> links;
 
-  public static Track fromMap(@NotNull Map<String, Object> map) {
+  public static Track fromMap(Map<String, Object> map) {
     Track track = new Track();
     track.setTitle(String.valueOf(map.get("title")));
     track.setDescription(Objects.toString(map.get("description"), null));

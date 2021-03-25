@@ -51,9 +51,16 @@ public class TrackDataFetcher {
     public DataFetcher<Connection<Track>> getAllPageable() {
         return dataFetchingEnvironment -> {
             int first = dataFetchingEnvironment.getArgument("first");
-            String cursor = dataFetchingEnvironment.getArgument("after");
+            Object cursorObj = dataFetchingEnvironment.getArgument("after");
+            Long cursor = null;
 
-            List<Edge<Track>> edges = getTrackList(cursor)
+            try {
+                cursor = Long.valueOf(String.valueOf(cursorObj));
+            } catch (NumberFormatException ne){
+                System.err.println("Cursor not valid " + cursor);
+            }
+
+            List<Edge<Track>> edges = getTrackList(first, cursor)
                 .stream()
                 .map(track -> new DefaultEdge<>(track, new DefaultConnectionCursor(track.getId().toString())))
                 .collect(Collectors.toUnmodifiableList());
@@ -67,11 +74,8 @@ public class TrackDataFetcher {
         };
     }
 
-    public List<Track> getTrackList(String cursor){
-        if (cursor == null){
-            return trackService.findAll();
-        }
-        return trackService.getTrackAfterCursor(Long.valueOf(cursor));
+    public List<Track> getTrackList(int first, Long cursor){
+       return trackService.findAll(first, cursor);
     }
 
     public DataFetcher<List<Track>> findByTitleDescriptionDataFetcher() {
