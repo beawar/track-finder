@@ -1,5 +1,6 @@
 package com.dovendev.track.jpa.entities;
 
+import java.lang.reflect.Field;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import org.jetbrains.annotations.NotNull;
+import org.springframework.data.util.ReflectionUtils;
 
 @Entity
 @Table(name = "tracks")
@@ -42,7 +43,7 @@ public class Track {
   @JoinColumn(name = "trackId", referencedColumnName = "id")
   private List<TrackLink> links;
 
-  public static Track fromMap(@NotNull Map<String, Object> map) {
+  public static Track fromMap(Map<String, Object> map) {
     Track track = new Track();
     track.setTitle(String.valueOf(map.get("title")));
     track.setDescription(Objects.toString(map.get("description"), null));
@@ -188,5 +189,12 @@ public class Track {
   @Override
   public int hashCode() {
     return id != null ? id.hashCode() : 0;
+  }
+
+  public Object getFieldValue(String fieldName) throws IllegalAccessException {
+    final Field fieldObject =
+        ReflectionUtils.findField(
+            Track.class, (field) -> field.getName().equals(fieldName));
+    return fieldObject != null ? fieldObject.get(this) : null;
   }
 }

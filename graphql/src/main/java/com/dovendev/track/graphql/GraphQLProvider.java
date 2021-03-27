@@ -50,22 +50,19 @@ public class GraphQLProvider {
         return schemaGenerator.makeExecutableSchema(typeRegistry, runtimeWiring);
     }
 
-    private RuntimeWiring buildWiring() {
-        return RuntimeWiring.newRuntimeWiring()
-                .scalar(CustomScalars.Duration)
-                .scalar(ExtendedScalars.DateTime)
-                .type(newTypeWiring("Query")
-                        .dataFetcher("getTrack", trackDataFetchers.getTrackDataFetcher()))
-                .type(newTypeWiring("Query")
-                    .dataFetcher("findAll", trackDataFetchers.findAllTrackDataFetcher()))
-                .type(newTypeWiring("Query")
-                    .dataFetcher("findByTitleDescription", trackDataFetchers.findByTitleDescriptionDataFetcher()))
-                .type(newTypeWiring("Mutation")
-                        .dataFetcher("createTrack", trackDataFetchers.createTrackDataFetcher()))
-                .type(newTypeWiring("Mutation")
-                        .dataFetcher("deleteTrack", trackDataFetchers.deleteTrackDataFetcher()))
-                .type(newTypeWiring("Mutation")
-                        .dataFetcher("updateTrack", trackDataFetchers.updateTrackDataFetcher()))
-                .build();
-    }
+  private RuntimeWiring buildWiring() {
+    return RuntimeWiring.newRuntimeWiring()
+        .scalar(CustomScalars.Duration)
+        .scalar(ExtendedScalars.DateTime)
+        .type(newTypeWiring("Query")
+            .dataFetcher("getTrack", trackDataFetchers.getTrackDataFetcher())
+            .dataFetcher("findAll", trackDataFetchers.findAllTrackDataFetcher())
+            .dataFetcher("getAllPageable", trackDataFetchers.getAllPageable())
+            .dataFetcher("findByTitleDescription",
+                trackDataFetchers.findByTitleDescriptionDataFetcher()))
+        .type(newTypeWiring("Mutation")
+            .dataFetcher("createTrack", trackDataFetchers.createTrackDataFetcher())
+            .dataFetcher("deleteTrack", trackDataFetchers.deleteTrackDataFetcher()))
+        .build();
+  }
 }
