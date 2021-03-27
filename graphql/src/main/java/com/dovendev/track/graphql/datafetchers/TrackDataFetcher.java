@@ -4,6 +4,8 @@ import com.dovendev.track.graphql.connection.CursorUtil;
 import com.dovendev.track.jpa.entities.Track;
 import com.dovendev.track.jpa.entities.TrackSort;
 import com.dovendev.track.jpa.services.TrackService;
+import graphql.GraphQLException;
+import graphql.GraphqlErrorException;
 import graphql.relay.Connection;
 import graphql.relay.DefaultConnection;
 import graphql.relay.DefaultConnectionCursor;
@@ -12,6 +14,7 @@ import graphql.relay.DefaultPageInfo;
 import graphql.relay.Edge;
 import graphql.schema.DataFetcher;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,7 +24,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class TrackDataFetcher {
   @Autowired private TrackService trackService;
-  private CursorUtil cursorUtil = new CursorUtil();
 
   public DataFetcher<Track> getTrackDataFetcher() {
     return dataFetchingEnvironment -> {
@@ -55,10 +57,18 @@ public class TrackDataFetcher {
       final Object cursorObj = dataFetchingEnvironment.getArgument("after");
       Long cursor = null;
 
-      try {
-        cursor = Long.valueOf(String.valueOf(cursorObj));
-      } catch (NumberFormatException ne) {
-        System.err.println("Cursor not valid " + cursor);
+      if (cursorObj != null) {
+        try {
+          cursor = Long.valueOf(String.valueOf(cursorObj));
+        } catch (NumberFormatException ne) {
+          GraphqlErrorException.Builder errorBuilder = GraphqlErrorException.newErrorException();
+          errorBuilder.message(ne.getMessage());
+          Map<String, Object> errorData = new HashMap<>();
+          errorData.put("error_code", "INVALID_CURSOR");
+          errorData.put("error_message", "Invalid cursor");
+          errorBuilder.extensions(errorData);
+          throw errorBuilder.build();
+        }
       }
 
       List<Track> tracks = getTrackList(limit + 1, cursor);
@@ -72,8 +82,8 @@ public class TrackDataFetcher {
 
       var pageInfo =
           new DefaultPageInfo(
-              cursorUtil.getFirstCursorFrom(edges),
-              cursorUtil.getLastCursorFrom(edges),
+              CursorUtil.getFirstCursorFrom(edges),
+              CursorUtil.getLastCursorFrom(edges),
               cursor != null,
               tracks.size() > limit);
       return new DefaultConnection<>(edges, pageInfo);
