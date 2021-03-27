@@ -5,7 +5,7 @@ type Query {
     #track query
     getTrack(id: ID!): Track
     findAll: [Track!]!
-    getAllPageable(first: Int!, after: ID): TrackConnection
+    getAllPageable(limit: Int!, after: ID): TrackConnection
     findByTitleDescription(searchText: String!): [Track!]!
 
     #link query

@@ -51,8 +51,8 @@ public class TrackDataFetcher {
 
   public DataFetcher<Connection<Track>> getAllPageable() {
     return dataFetchingEnvironment -> {
-      int first = dataFetchingEnvironment.getArgument("first");
-      Object cursorObj = dataFetchingEnvironment.getArgument("after");
+      int limit = dataFetchingEnvironment.getArgument("limit");
+      final Object cursorObj = dataFetchingEnvironment.getArgument("after");
       Long cursor = null;
 
       try {
@@ -61,10 +61,11 @@ public class TrackDataFetcher {
         System.err.println("Cursor not valid " + cursor);
       }
 
+      List<Track> tracks = getTrackList(limit + 1, cursor);
       List<Edge<Track>> edges =
-          getTrackList(first + 1, cursor)
-              .stream()
-              .map(track ->
+          tracks.subList(0, Math.min(tracks.size(), limit)).stream()
+              .map(
+                  track ->
                       new DefaultEdge<>(
                           track, new DefaultConnectionCursor(track.getId().toString())))
               .collect(Collectors.toUnmodifiableList());
@@ -74,15 +75,15 @@ public class TrackDataFetcher {
               cursorUtil.getFirstCursorFrom(edges),
               cursorUtil.getLastCursorFrom(edges),
               cursor != null,
-              edges.size() > first);
-      return new DefaultConnection<>(edges.subList(0, edges.size() - 1), pageInfo);
+              tracks.size() > limit);
+      return new DefaultConnection<>(edges, pageInfo);
     };
   }
 
-  public List<Track> getTrackList(int first, Long cursor) {
+  public List<Track> getTrackList(int limit, Long cursor) {
     List<TrackSort> trackSorts = new ArrayList<>();
     trackSorts.add(TrackSort.UPLOAD_TIME_DESC);
-    return trackService.findAll(first, cursor, trackSorts);
+    return trackService.findAll(limit, cursor, trackSorts);
   }
 
   public DataFetcher<List<Track>> findByTitleDescriptionDataFetcher() {
