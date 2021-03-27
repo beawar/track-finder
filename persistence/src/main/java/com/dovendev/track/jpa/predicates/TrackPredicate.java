@@ -38,7 +38,7 @@ public class TrackPredicate {
         default -> null;
       };
 
-    } if (isDouble(criteriaValue)) {
+    } else if (isDouble(criteriaValue)) {
       NumberPath<Double> path = entityPath.getNumber(criteria.getKey(), Double.class);
       Double value = Double.valueOf(criteria.getValue().toString());
       return switch (criteria.getOperation()) {

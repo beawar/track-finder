@@ -62,9 +62,9 @@ public class TrackDataFetcher {
       }
 
       List<Edge<Track>> edges =
-          getTrackList(first, cursor).stream()
-              .map(
-                  track ->
+          getTrackList(first + 1, cursor)
+              .stream()
+              .map(track ->
                       new DefaultEdge<>(
                           track, new DefaultConnectionCursor(track.getId().toString())))
               .collect(Collectors.toUnmodifiableList());
@@ -74,8 +74,8 @@ public class TrackDataFetcher {
               cursorUtil.getFirstCursorFrom(edges),
               cursorUtil.getLastCursorFrom(edges),
               cursor != null,
-              edges.size() >= first);
-      return new DefaultConnection<>(edges, pageInfo);
+              edges.size() > first);
+      return new DefaultConnection<>(edges.subList(0, edges.size() - 1), pageInfo);
     };
   }
 

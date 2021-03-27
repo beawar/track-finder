@@ -59,7 +59,7 @@ type TrackConnection {
 }
 
 type TrackEdge {
-    cursor: String
+    cursor: ID!
     node: Track
 }
 

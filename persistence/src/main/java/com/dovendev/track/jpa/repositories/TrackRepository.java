@@ -5,7 +5,6 @@ import com.dovendev.track.jpa.entities.Track;
 import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.core.types.dsl.StringPath;
 import java.util.List;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -20,9 +19,6 @@ public interface TrackRepository extends JpaRepository<Track, Long>,
   @Query("SELECT DISTINCT t FROM Track t WHERE UPPER(t.title) LIKE CONCAT('%',UPPER(:searchText),'%') "
       + "OR UPPER(t.description) LIKE CONCAT('%',UPPER(:searchText),'%') ORDER BY t.uploadTime DESC")
   List<Track> findByTitleDescription(@Param("searchText") String searchText);
-
-  List<Track> findBy(Pageable pageable);
-  List<Track> findByIdAfter(Long id, Pageable pageable);
 
   @Override
   default public void customize(QuerydslBindings bindings, QTrack root) {

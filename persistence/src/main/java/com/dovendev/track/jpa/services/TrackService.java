@@ -54,7 +54,7 @@ public class TrackService {
     sortOrders.add(TrackSort.ID_ASC.getSortOrder());
     Pageable pageable = PageRequest.of(0, limit, Sort.by(sortOrders));
     if (cursor == null) {
-      return trackRepository.findBy(pageable);
+      return trackRepository.findAll(pageable).toList();
     }
     final Track edge = findById(cursor);
     if (edge != null) {
