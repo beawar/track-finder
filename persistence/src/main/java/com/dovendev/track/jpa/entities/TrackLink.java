@@ -6,7 +6,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Table(name = "track_links")
@@ -26,7 +25,7 @@ public class TrackLink {
         this.link = link;
     }
 
-    public static TrackLink fromMap(@NotNull Map<String, Object> map) {
+    public static TrackLink fromMap(Map<String, Object> map) {
         TrackLink trackLink = new TrackLink();
         trackLink.setTrackId(map.get("trackId") != null ? Long.valueOf(String.valueOf(map.get("trackId"))) : null);
         trackLink.setLink(String.valueOf(map.get("link")));

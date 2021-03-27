@@ -21,49 +21,49 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class GraphQLProvider {
-    private GraphQL graphQL;
 
-    @Autowired
-    private TrackDataFetcher trackDataFetchers;
+  private GraphQL graphQL;
 
-    @Bean
-    public GraphQL graphQL() {
-        return graphQL;
+  @Autowired
+  private TrackDataFetcher trackDataFetchers;
+
+  @Bean
+  public GraphQL graphQL() {
+    return graphQL;
+  }
+
+  @PostConstruct
+  public void init() throws IOException {
+    try (InputStream schema = getClass().getClassLoader().getResourceAsStream("schema.graphql")) {
+      if (schema == null) {
+        throw new IOException("Schema not found!");
+      }
+      String schemaStr = new String(schema.readAllBytes(), StandardCharsets.UTF_8);
+      GraphQLSchema graphQLSchema = buildSchema(schemaStr);
+      this.graphQL = GraphQL.newGraphQL(graphQLSchema).build();
     }
+  }
 
-    @PostConstruct
-    public void init() throws IOException {
-        try (InputStream schema = getClass().getClassLoader().getResourceAsStream("schema.graphql")) {
-            if (schema == null) {
-                throw new IOException("Schema not found!");
-            }
-            String schemaStr = new String(schema.readAllBytes(), StandardCharsets.UTF_8);
-            GraphQLSchema graphQLSchema = buildSchema(schemaStr);
-            this.graphQL = GraphQL.newGraphQL(graphQLSchema).build();
-        }
-    }
+  private GraphQLSchema buildSchema(String sdl) {
+    TypeDefinitionRegistry typeRegistry = new SchemaParser().parse(sdl);
+    RuntimeWiring runtimeWiring = buildWiring();
+    SchemaGenerator schemaGenerator = new SchemaGenerator();
+    return schemaGenerator.makeExecutableSchema(typeRegistry, runtimeWiring);
+  }
 
-    private GraphQLSchema buildSchema(String sdl) {
-        TypeDefinitionRegistry typeRegistry = new SchemaParser().parse(sdl);
-        RuntimeWiring runtimeWiring = buildWiring();
-        SchemaGenerator schemaGenerator = new SchemaGenerator();
-        return schemaGenerator.makeExecutableSchema(typeRegistry, runtimeWiring);
-    }
-
-    private RuntimeWiring buildWiring() {
-        return RuntimeWiring.newRuntimeWiring()
-                .scalar(CustomScalars.Duration)
-                .scalar(ExtendedScalars.DateTime)
-                .type(newTypeWiring("Query")
-                        .dataFetcher("getTrack", trackDataFetchers.getTrackDataFetcher()))
-                .type(newTypeWiring("Query")
-                    .dataFetcher("findAll", trackDataFetchers.findAllTrackDataFetcher()))
-                .type(newTypeWiring("Query")
-                    .dataFetcher("findByTitleDescription", trackDataFetchers.findByTitleDescriptionDataFetcher()))
-                .type(newTypeWiring("Mutation")
-                        .dataFetcher("createTrack", trackDataFetchers.createTrackDataFetcher()))
-                .type(newTypeWiring("Mutation")
-                        .dataFetcher("deleteTrack", trackDataFetchers.deleteTrackDataFetcher()))
-                .build();
-    }
+  private RuntimeWiring buildWiring() {
+    return RuntimeWiring.newRuntimeWiring()
+        .scalar(CustomScalars.Duration)
+        .scalar(ExtendedScalars.DateTime)
+        .type(newTypeWiring("Query")
+            .dataFetcher("getTrack", trackDataFetchers.getTrackDataFetcher())
+            .dataFetcher("findAll", trackDataFetchers.findAllTrackDataFetcher())
+            .dataFetcher("getAllPageable", trackDataFetchers.getAllPageable())
+            .dataFetcher("findByTitleDescription",
+                trackDataFetchers.findByTitleDescriptionDataFetcher()))
+        .type(newTypeWiring("Mutation")
+            .dataFetcher("createTrack", trackDataFetchers.createTrackDataFetcher())
+            .dataFetcher("deleteTrack", trackDataFetchers.deleteTrackDataFetcher()))
+        .build();
+  }
 }

@@ -5,6 +5,7 @@ type Query {
     #track query
     getTrack(id: ID!): Track
     findAll: [Track!]!
+    getAllPageable(limit: Int!, after: ID): TrackConnection
     findByTitleDescription(searchText: String!): [Track!]!
 
     #link query
@@ -19,17 +20,6 @@ type Mutation {
     #link mutation
     createLink(track: TrackInput!): Track!
     deleteLink(id: ID!): Track
-}
-
-type Track {
-    id: ID!
-    title: String!
-    description: String
-    length: Float
-    time: Duration
-    altitudeDifference: Int
-    links: [Link!]!
-    uploadTime: DateTime!
 }
 
 input TrackInput {
@@ -50,4 +40,30 @@ type Link {
 input LinkInput {
     link: String!
     mainLink: Boolean
+}
+
+type Track {
+    id: ID!
+    title: String!
+    description: String
+    length: Float
+    time: Duration
+    altitudeDifference: Int
+    links: [Link!]!
+    uploadTime: DateTime!
+}
+
+type TrackConnection {
+    edges: [TrackEdge]
+    pageInfo: PageInfo
+}
+
+type TrackEdge {
+    cursor: ID!
+    node: Track
+}
+
+type PageInfo {
+  hasPreviousPage: Boolean!
+  hasNextPage: Boolean!
 }
