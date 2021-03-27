@@ -1,5 +1,6 @@
 package com.dovendev.track.jpa.entities;
 
+import java.lang.reflect.Field;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import org.springframework.data.util.ReflectionUtils;
 
 @Entity
 @Table(name = "tracks")
@@ -187,5 +189,12 @@ public class Track {
   @Override
   public int hashCode() {
     return id != null ? id.hashCode() : 0;
+  }
+
+  public Object getFieldValue(String fieldName) throws IllegalAccessException {
+    final Field fieldObject =
+        ReflectionUtils.findField(
+            Track.class, (field) -> field.getName().equals(fieldName));
+    return fieldObject != null ? fieldObject.get(this) : null;
   }
 }

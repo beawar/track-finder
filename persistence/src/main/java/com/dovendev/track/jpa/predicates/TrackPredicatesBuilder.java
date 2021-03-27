@@ -1,5 +1,6 @@
 package com.dovendev.track.jpa.predicates;
 
+import com.dovendev.track.jpa.entities.SearchOperation;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ public class TrackPredicatesBuilder {
     params = new ArrayList<>();
   }
 
-  public TrackPredicatesBuilder with(final String key, final String operation, final Object value) {
+  public TrackPredicatesBuilder with(final String key, final SearchOperation operation, final Object value) {
     params.add(new SearchCriteria(key, operation, value));
     return this;
   }

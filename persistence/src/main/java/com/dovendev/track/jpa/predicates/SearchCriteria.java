@@ -1,14 +1,16 @@
 package com.dovendev.track.jpa.predicates;
 
+import com.dovendev.track.jpa.entities.SearchOperation;
+
 public class SearchCriteria {
   private String key;
-  private String operation;
+  private SearchOperation operation;
   private Object value;
 
   public SearchCriteria() {
   }
 
-  public SearchCriteria(String key, String operation, Object value) {
+  public SearchCriteria(String key, SearchOperation operation, Object value) {
     this.key = key;
     this.operation = operation;
     this.value = value;
@@ -18,11 +20,11 @@ public class SearchCriteria {
     return key;
   }
 
-  public String getOperation() {
+  public SearchOperation getOperation() {
     return operation;
   }
 
-  public void setOperation(String operation) {
+  public void setOperation(SearchOperation operation) {
     this.operation = operation;
   }
 
