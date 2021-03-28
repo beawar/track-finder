@@ -5,7 +5,6 @@ module track.finder.persistence {
   requires spring.context;
   requires spring.data.commons;
   requires querydsl.core;
-  requires java.annotation;
   requires spring.core;
 
   exports com.dovendev.track.jpa.entities;

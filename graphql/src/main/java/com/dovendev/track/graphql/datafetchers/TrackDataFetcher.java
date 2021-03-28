@@ -1,20 +1,19 @@
 package com.dovendev.track.graphql.datafetchers;
 
 import com.dovendev.track.graphql.connection.CursorUtil;
+import com.dovendev.track.graphql.utils.Utils;
 import com.dovendev.track.jpa.entities.Track;
 import com.dovendev.track.jpa.entities.TrackSort;
 import com.dovendev.track.jpa.services.TrackService;
-import graphql.GraphQLException;
-import graphql.GraphqlErrorException;
 import graphql.relay.Connection;
 import graphql.relay.DefaultConnection;
 import graphql.relay.DefaultConnectionCursor;
 import graphql.relay.DefaultEdge;
 import graphql.relay.DefaultPageInfo;
 import graphql.relay.Edge;
+import graphql.relay.PageInfo;
 import graphql.schema.DataFetcher;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -54,22 +53,7 @@ public class TrackDataFetcher {
   public DataFetcher<Connection<Track>> getAllPageable() {
     return dataFetchingEnvironment -> {
       int limit = dataFetchingEnvironment.getArgument("limit");
-      final Object cursorObj = dataFetchingEnvironment.getArgument("after");
-      Long cursor = null;
-
-      if (cursorObj != null) {
-        try {
-          cursor = Long.valueOf(String.valueOf(cursorObj));
-        } catch (NumberFormatException ne) {
-          GraphqlErrorException.Builder errorBuilder = GraphqlErrorException.newErrorException();
-          errorBuilder.message(ne.getMessage());
-          Map<String, Object> errorData = new HashMap<>();
-          errorData.put("error_code", "INVALID_CURSOR");
-          errorData.put("error_message", "Invalid cursor");
-          errorBuilder.extensions(errorData);
-          throw errorBuilder.build();
-        }
-      }
+      final Long cursor = Utils.parseId(dataFetchingEnvironment.getArgument("after"));
 
       List<Track> tracks = getTrackList(limit + 1, cursor);
       List<Edge<Track>> edges =
@@ -80,7 +64,7 @@ public class TrackDataFetcher {
                           track, new DefaultConnectionCursor(track.getId().toString())))
               .collect(Collectors.toUnmodifiableList());
 
-      var pageInfo =
+      PageInfo pageInfo =
           new DefaultPageInfo(
               CursorUtil.getFirstCursorFrom(edges),
               CursorUtil.getLastCursorFrom(edges),

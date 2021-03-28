@@ -2,6 +2,7 @@ package com.dovendev.track.graphql;
 
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
+import com.dovendev.track.graphql.datafetchers.ActivityDataFetcher;
 import com.dovendev.track.graphql.datafetchers.TrackDataFetcher;
 import com.dovendev.track.graphql.scalars.CustomScalars;
 import graphql.GraphQL;
@@ -26,6 +27,8 @@ public class GraphQLProvider {
 
   @Autowired
   private TrackDataFetcher trackDataFetchers;
+  @Autowired
+  private ActivityDataFetcher activityDataFetcher;
 
   @Bean
   public GraphQL graphQL() {
@@ -60,10 +63,17 @@ public class GraphQLProvider {
             .dataFetcher("findAll", trackDataFetchers.findAllTrackDataFetcher())
             .dataFetcher("getAllPageable", trackDataFetchers.getAllPageable())
             .dataFetcher("findByTitleDescription",
-                trackDataFetchers.findByTitleDescriptionDataFetcher()))
+                trackDataFetchers.findByTitleDescriptionDataFetcher())
+            .dataFetcher("getActivities", activityDataFetcher.getActivities())
+            .dataFetcher("getActivity", activityDataFetcher.getActivity())
+        )
         .type(newTypeWiring("Mutation")
             .dataFetcher("createTrack", trackDataFetchers.createTrackDataFetcher())
-            .dataFetcher("deleteTrack", trackDataFetchers.deleteTrackDataFetcher()))
+            .dataFetcher("deleteTrack", trackDataFetchers.deleteTrackDataFetcher())
+            .dataFetcher("createActivity", activityDataFetcher.createActivity())
+            .dataFetcher("updateActivity", activityDataFetcher.updateActivity())
+            .dataFetcher("deleteActivity", activityDataFetcher.deleteActivity())
+        )
         .build();
   }
 }

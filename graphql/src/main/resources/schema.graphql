@@ -2,14 +2,15 @@ scalar DateTime
 scalar Duration
 
 type Query {
-    #track query
     getTrack(id: ID!): Track
     findAll: [Track!]!
     getAllPageable(limit: Int!, after: ID): TrackConnection
     findByTitleDescription(searchText: String!): [Track!]!
 
-    #link query
     getLink(id: ID!): Link
+
+    getActivities: [Activity!]!
+    getActivity(id: ID!): Activity
 }
 
 type Mutation {
@@ -20,6 +21,10 @@ type Mutation {
     #link mutation
     createLink(track: TrackInput!): Track!
     deleteLink(id: ID!): Track
+
+    createActivity(name: String!): Activity!
+    deleteActivity(id: ID!): Activity
+    updateActivity(id: ID!, name: String!): Activity
 }
 
 input TrackInput {
@@ -29,6 +34,7 @@ input TrackInput {
     time: Duration
     altitudeDifference: Int
     links: [LinkInput!]
+    activity: ID
 }
 
 type Link {
@@ -42,6 +48,11 @@ input LinkInput {
     mainLink: Boolean
 }
 
+type Activity {
+  id: ID!
+  name: String!
+}
+
 type Track {
     id: ID!
     title: String!
@@ -51,19 +62,22 @@ type Track {
     altitudeDifference: Int
     links: [Link!]!
     uploadTime: DateTime!
+    activity: Activity
 }
 
 type TrackConnection {
-    edges: [TrackEdge]
-    pageInfo: PageInfo
+    edges: [TrackEdge!]!
+    pageInfo: PageInfo!
 }
 
 type TrackEdge {
     cursor: ID!
-    node: Track
+    node: Track!
 }
 
 type PageInfo {
+  startCursor: ID
+  endCursor: ID
   hasPreviousPage: Boolean!
   hasNextPage: Boolean!
 }

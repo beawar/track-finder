@@ -73,6 +73,11 @@ public class Track {
                   .collect(Collectors.toList());
       track.getLinks().addAll(links);
     }
+    if (map.get("activity") != null) {
+      Activity activity = new Activity();
+      activity.setId(Long.parseLong(String.valueOf(map.get("activity"))));
+      track.setActivity(activity);
+    }
     return track;
   }
 
@@ -193,8 +198,7 @@ public class Track {
 
   public Object getFieldValue(String fieldName) throws IllegalAccessException {
     final Field fieldObject =
-        ReflectionUtils.findField(
-            Track.class, (field) -> field.getName().equals(fieldName));
+        ReflectionUtils.findField(Track.class, (field) -> field.getName().equals(fieldName));
     return fieldObject != null ? fieldObject.get(this) : null;
   }
 }
