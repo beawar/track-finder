@@ -1,5 +1,6 @@
 package com.dovendev.track.jpa.services;
 
+import com.dovendev.track.jpa.entities.Activity;
 import com.dovendev.track.jpa.entities.QTrack;
 import com.dovendev.track.jpa.entities.SearchOperation;
 import com.dovendev.track.jpa.entities.Track;
@@ -26,7 +27,10 @@ public class TrackService {
   }
 
   public Track save(Track track) {
-    return trackRepository.save(track);
+    Track savedTrack = trackRepository.save(track);
+    // refresh saved entity to return all data (with activity full loaded)
+    trackRepository.refresh(savedTrack);
+    return savedTrack;
   }
 
   public Track findById(Long id) {
