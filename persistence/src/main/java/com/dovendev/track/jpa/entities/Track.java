@@ -18,6 +18,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import org.springframework.data.util.ReflectionUtils;
 
@@ -37,7 +38,9 @@ public class Track {
 
   private OffsetDateTime uploadTime;
 
-  @OneToOne private Activity activity;
+  @OneToOne
+  @OrderBy("name")
+  private Activity activity;
 
   @OneToMany(cascade = CascadeType.ALL)
   @JoinColumn(name = "trackId", referencedColumnName = "id")
