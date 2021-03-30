@@ -3,9 +3,7 @@ scalar Duration
 
 type Query {
     getTrack(id: ID!): Track
-    findAll: [Track!]!
-    getAllPageable(limit: Int!, after: ID): TrackConnection
-    findByTitleDescription(searchText: String!): [Track!]!
+    getTracks(limit: Int!, after: ID, sort: [TrackSort!], searchText: String): TrackConnection
 
     getLink(id: ID!): Link
 
@@ -76,8 +74,25 @@ type TrackEdge {
 }
 
 type PageInfo {
-  startCursor: ID
-  endCursor: ID
-  hasPreviousPage: Boolean!
-  hasNextPage: Boolean!
+    startCursor: ID
+    endCursor: ID
+    hasPreviousPage: Boolean!
+    hasNextPage: Boolean!
+}
+
+enum TrackSort {
+    ID_ASC
+    ID_DESC
+    UPLOAD_TIME_ASC
+    UPLOAD_TIME_DESC
+    TITLE_ASC
+    TITLE_DESC
+    TIME_ASC
+    TIME_DESC
+    LENGTH_ASC
+    LENGTH_DESC
+    ALT_DIFF_ASC
+    ALT_DIFF_DESC
+    ACTIVITY_NAME_ASC
+    ACTIVITY_NAME_DESC
 }

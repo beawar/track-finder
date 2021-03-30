@@ -46,16 +46,24 @@ public class TrackDataFetcher {
     };
   }
 
-  public DataFetcher<List<Track>> findAllTrackDataFetcher() {
-    return dataFetchingEnvironment -> trackService.findAll();
-  }
-
-  public DataFetcher<Connection<Track>> getAllPageable() {
+  public DataFetcher<Connection<Track>> getTracksDataFetcher() {
     return dataFetchingEnvironment -> {
       int limit = dataFetchingEnvironment.getArgument("limit");
       final Long cursor = Utils.parseId(dataFetchingEnvironment.getArgument("after"));
+      String searchText = dataFetchingEnvironment.getArgument("searchText");
+      List<String> sortNames = dataFetchingEnvironment.getArgument("sort");
 
-      List<Track> tracks = getTrackList(limit + 1, cursor);
+      List<TrackSort> trackSorts = new ArrayList<TrackSort>();
+      if (sortNames!=null && !sortNames.isEmpty()) {
+          trackSorts.addAll(sortNames.stream()
+              .filter(sortName -> !sortName.isBlank())
+              .map(sortName -> TrackSort.valueOf(sortName)).collect(Collectors.toList()));
+      } else {
+          // if sort list is empty, default sort is by upload time desc
+          trackSorts.add(TrackSort.UPLOAD_TIME_DESC);
+      }
+
+      List<Track> tracks = getTrackList(limit + 1, cursor, trackSorts, searchText);
       List<Edge<Track>> edges =
           tracks.subList(0, Math.min(tracks.size(), limit)).stream()
               .map(
@@ -74,16 +82,7 @@ public class TrackDataFetcher {
     };
   }
 
-  public List<Track> getTrackList(int limit, Long cursor) {
-    List<TrackSort> trackSorts = new ArrayList<>();
-    trackSorts.add(TrackSort.UPLOAD_TIME_DESC);
-    return trackService.findAll(limit, cursor, trackSorts);
-  }
-
-  public DataFetcher<List<Track>> findByTitleDescriptionDataFetcher() {
-    return dataFetchingEnvironment -> {
-      String searchText = dataFetchingEnvironment.getArgument("searchText");
-      return trackService.findByTitleDescription(searchText);
-    };
+  public List<Track> getTrackList(int limit, Long cursor, List<TrackSort> trackSorts, String searchText) {
+    return trackService.findAll(limit, cursor, trackSorts, searchText);
   }
 }

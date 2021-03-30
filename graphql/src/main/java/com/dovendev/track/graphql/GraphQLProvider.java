@@ -60,10 +60,7 @@ public class GraphQLProvider {
         .scalar(ExtendedScalars.DateTime)
         .type(newTypeWiring("Query")
             .dataFetcher("getTrack", trackDataFetchers.getTrackDataFetcher())
-            .dataFetcher("findAll", trackDataFetchers.findAllTrackDataFetcher())
-            .dataFetcher("getAllPageable", trackDataFetchers.getAllPageable())
-            .dataFetcher("findByTitleDescription",
-                trackDataFetchers.findByTitleDescriptionDataFetcher())
+            .dataFetcher("getTracks", trackDataFetchers.getTracksDataFetcher())
             .dataFetcher("getActivities", activityDataFetcher.getActivities())
             .dataFetcher("getActivity", activityDataFetcher.getActivity())
         )

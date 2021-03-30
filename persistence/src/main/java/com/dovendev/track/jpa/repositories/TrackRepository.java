@@ -15,10 +15,6 @@ import org.springframework.data.repository.query.Param;
 public interface TrackRepository extends CustomRepository<Track, Long>,
     QuerydslPredicateExecutor<Track>, QuerydslBinderCustomizer<QTrack> {
 
-  @Query("SELECT DISTINCT t FROM Track t WHERE UPPER(t.title) LIKE CONCAT('%',UPPER(:searchText),'%') "
-      + "OR UPPER(t.description) LIKE CONCAT('%',UPPER(:searchText),'%') ORDER BY t.uploadTime DESC")
-  List<Track> findByTitleDescription(@Param("searchText") String searchText);
-
   @Override
   default void customize(QuerydslBindings bindings, QTrack root) {
     bindings.bind(String.class)
