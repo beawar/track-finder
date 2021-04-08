@@ -17,7 +17,7 @@ services:
       - MYSQL_PASSWORD=trackfinder
 
   springboot-track:
-    image: 'track-web'
+    image: 'trackdev/trackfinder'
     networks:
       backend:
     ports:
