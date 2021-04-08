@@ -2,6 +2,7 @@ package com.dovendev.track.graphql;
 
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
+import com.dovendev.track.graphql.datafetchers.ActivityDataFetcher;
 import com.dovendev.track.graphql.datafetchers.TrackDataFetcher;
 import com.dovendev.track.graphql.scalars.CustomScalars;
 import graphql.GraphQL;
@@ -21,48 +22,56 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class GraphQLProvider {
-    private GraphQL graphQL;
 
-    @Autowired
-    private TrackDataFetcher trackDataFetchers;
+  private GraphQL graphQL;
 
-    @Bean
-    public GraphQL graphQL() {
-        return graphQL;
+  @Autowired
+  private TrackDataFetcher trackDataFetchers;
+  @Autowired
+  private ActivityDataFetcher activityDataFetcher;
+
+  @Bean
+  public GraphQL graphQL() {
+    return graphQL;
+  }
+
+  @PostConstruct
+  public void init() throws IOException {
+    try (InputStream schema = getClass().getClassLoader().getResourceAsStream("schema.graphql")) {
+      if (schema == null) {
+        throw new IOException("Schema not found!");
+      }
+      String schemaStr = new String(schema.readAllBytes(), StandardCharsets.UTF_8);
+      GraphQLSchema graphQLSchema = buildSchema(schemaStr);
+      this.graphQL = GraphQL.newGraphQL(graphQLSchema).build();
     }
+  }
 
-    @PostConstruct
-    public void init() throws IOException {
-        try (InputStream schema = getClass().getClassLoader().getResourceAsStream("schema.graphql")) {
-            if (schema == null) {
-                throw new IOException("Schema not found!");
-            }
-            String schemaStr = new String(schema.readAllBytes(), StandardCharsets.UTF_8);
-            GraphQLSchema graphQLSchema = buildSchema(schemaStr);
-            this.graphQL = GraphQL.newGraphQL(graphQLSchema).build();
-        }
-    }
-
-    private GraphQLSchema buildSchema(String sdl) {
-        TypeDefinitionRegistry typeRegistry = new SchemaParser().parse(sdl);
-        RuntimeWiring runtimeWiring = buildWiring();
-        SchemaGenerator schemaGenerator = new SchemaGenerator();
-        return schemaGenerator.makeExecutableSchema(typeRegistry, runtimeWiring);
-    }
+  private GraphQLSchema buildSchema(String sdl) {
+    TypeDefinitionRegistry typeRegistry = new SchemaParser().parse(sdl);
+    RuntimeWiring runtimeWiring = buildWiring();
+    SchemaGenerator schemaGenerator = new SchemaGenerator();
+    return schemaGenerator.makeExecutableSchema(typeRegistry, runtimeWiring);
+  }
 
   private RuntimeWiring buildWiring() {
     return RuntimeWiring.newRuntimeWiring()
         .scalar(CustomScalars.Duration)
         .scalar(ExtendedScalars.DateTime)
         .type(newTypeWiring("Query")
-            .dataFetcher("getTrack", trackDataFetchers.getTrackDataFetcher())
-            .dataFetcher("findAll", trackDataFetchers.findAllTrackDataFetcher())
-            .dataFetcher("getAllPageable", trackDataFetchers.getAllPageable())
-            .dataFetcher("findByTitleDescription",
-                trackDataFetchers.findByTitleDescriptionDataFetcher()))
+            .dataFetcher("getTrack", trackDataFetchers.getTrack())
+            .dataFetcher("getTracks", trackDataFetchers.getTracks())
+            .dataFetcher("getActivities", activityDataFetcher.getActivities())
+            .dataFetcher("getActivity", activityDataFetcher.getActivity())
+        )
         .type(newTypeWiring("Mutation")
-            .dataFetcher("createTrack", trackDataFetchers.createTrackDataFetcher())
-            .dataFetcher("deleteTrack", trackDataFetchers.deleteTrackDataFetcher()))
+            .dataFetcher("createTrack", trackDataFetchers.createTrack())
+            .dataFetcher("deleteTrack", trackDataFetchers.deleteTrack())
+            .dataFetcher("updateTrack", trackDataFetchers.updateTrack())
+            .dataFetcher("createActivity", activityDataFetcher.createActivity())
+            .dataFetcher("updateActivity", activityDataFetcher.updateActivity())
+            .dataFetcher("deleteActivity", activityDataFetcher.deleteActivity())
+        )
         .build();
   }
 }

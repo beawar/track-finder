@@ -18,6 +18,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import org.springframework.data.util.ReflectionUtils;
 
@@ -37,7 +38,9 @@ public class Track {
 
   private OffsetDateTime uploadTime;
 
-  @OneToOne private Activity activity;
+  @OneToOne
+  @OrderBy("name")
+  private Activity activity;
 
   @OneToMany(cascade = CascadeType.ALL)
   @JoinColumn(name = "trackId", referencedColumnName = "id")
@@ -72,6 +75,11 @@ public class Track {
                       })
                   .collect(Collectors.toList());
       track.getLinks().addAll(links);
+    }
+    if (map.get("activity") != null) {
+      Activity activity = new Activity();
+      activity.setId(Long.parseLong(String.valueOf(map.get("activity"))));
+      track.setActivity(activity);
     }
     return track;
   }
@@ -193,8 +201,7 @@ public class Track {
 
   public Object getFieldValue(String fieldName) throws IllegalAccessException {
     final Field fieldObject =
-        ReflectionUtils.findField(
-            Track.class, (field) -> field.getName().equals(fieldName));
+        ReflectionUtils.findField(Track.class, (field) -> field.getName().equals(fieldName));
     return fieldObject != null ? fieldObject.get(this) : null;
   }
 }

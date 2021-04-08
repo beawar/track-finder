@@ -1,5 +1,6 @@
 package com.dovendev.track.graphql.scalars;
 
+import com.dovendev.track.graphql.utils.Utils;
 import graphql.language.StringValue;
 import graphql.schema.Coercing;
 import graphql.schema.CoercingParseLiteralException;
@@ -27,7 +28,8 @@ public class GraphQLDurationCoercing implements Coercing<Duration, String> {
   public String serialize(Object dataFetcherResult) throws CoercingSerializeException {
     Duration result = convert(dataFetcherResult);
     if (result == null) {
-      throw new CoercingSerializeException("Expected type 'Duration' but was '" + Utils.typeName(dataFetcherResult) + "'");
+      throw new CoercingSerializeException(
+          "Expected type 'Duration' but was '" + Utils.typeName(dataFetcherResult) + "'");
     }
     return result.toString();
   }
@@ -36,7 +38,8 @@ public class GraphQLDurationCoercing implements Coercing<Duration, String> {
   public Duration parseValue(Object input) throws CoercingParseValueException {
     Duration result = convert(input);
     if (result == null) {
-      throw new CoercingSerializeException("Expected type 'Duration' but was '" + Utils.typeName(input) + "'");
+      throw new CoercingSerializeException(
+          "Expected type 'Duration' but was '" + Utils.typeName(input) + "'");
     }
     return result;
   }
@@ -46,11 +49,11 @@ public class GraphQLDurationCoercing implements Coercing<Duration, String> {
     if (input instanceof StringValue) {
       Duration result = convert(input);
       if (result == null) {
-        throw new CoercingParseLiteralException("Unable to turn AST input into a 'Duration': '" + input + "'");
+        throw new CoercingParseLiteralException(
+            "Unable to turn AST input into a 'Duration': '" + input + "'");
       }
     }
     throw new CoercingParseLiteralException(
-        "Expected AST type 'StringValue' but was '" + Utils.typeName(input) + "'."
-    );
+        "Expected AST type 'StringValue' but was '" + Utils.typeName(input) + "'.");
   }
 }
