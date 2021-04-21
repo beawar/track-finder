@@ -91,7 +91,7 @@ public class TrackDataFetcher {
             Map<String, Object> trackUpdateMap = dataFetchingEnvironment.getArgument("track");
             Track track = Track.fromMap(trackUpdateMap);
             track.setId(Long.valueOf(dataFetchingEnvironment.getArgument("id")));
-            return trackService.update(track);
+            return trackService.update(track).orElse(null);
         };
     }
 }

@@ -9,6 +9,7 @@ import com.dovendev.track.jpa.repositories.TrackRepository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -83,7 +84,12 @@ public class TrackService {
     return page.toList();
   }
 
-  public Track update(Track track){
-    return trackRepository.save(track);
+  public Optional<Track> update(Track track){
+    Optional<Track> trackToUpdate = trackRepository.findById(track.getId());
+    if(trackToUpdate.isPresent()){
+      Track updateTrack = Track.merge(track, trackToUpdate.get());
+      return Optional.of(trackRepository.save(updateTrack));
+    }
+    return trackToUpdate;
   }
 }

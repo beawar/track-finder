@@ -8,26 +8,36 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.dovendev.track.jpa.entities.QTrack;
 import com.dovendev.track.jpa.entities.Track;
+import com.dovendev.track.jpa.entities.TrackSort;
 import com.dovendev.track.jpa.repositories.TrackRepository;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 
 @DisplayName("track.finder.persistence/com.dovendev.track.jpa.services.TrackService")
 @DataJpaTest
 class TrackServiceTest {
 
-  private TrackService trackService;
-
   private final TrackRepository trackRepository = Mockito.mock(TrackRepository.class);
+
+  private TrackService trackService;
 
   @BeforeEach
   void setup() {
@@ -36,16 +46,16 @@ class TrackServiceTest {
 
   @Test
   void findById() {
-    when(trackRepository.findById(1L)).thenReturn(optionalTrack());
+    when(trackRepository.findById(1L)).thenReturn(optionalTrack(1L));
     Track track = trackService.findById(1L);
     assertNotNull(track);
-    assertEquals(track, optionalTrack().orElse(null));
+    assertEquals(track, optionalTrack(1L).orElse(null));
   }
 
   @Test
   void create() {
     final Track trackInput = trackInput();
-    when(trackRepository.save(trackInput)).thenReturn(optionalTrack().orElse(null));
+    when(trackRepository.save(trackInput)).thenReturn(optionalTrack(1L).orElse(null));
     Track track = trackService.create(trackInput);
     assertNotNull(track);
     assertNotNull(track.getId());
@@ -65,52 +75,50 @@ class TrackServiceTest {
     doNothing().when(trackRepository).delete(trackDelete());
     Track track = trackService.delete(null);
     assertNull(track);
-    verify(trackRepository, times(0)).delete(null);
+    verify(trackRepository, times(1)).delete(null);
   }
 
   @Test
-  void findAll() {
-    when(trackRepository.findAll(Sort.by(Direction.DESC, "uploadTime"))).thenReturn(trackList());
-    List<Track> trackList = trackService.findAll();
+  void findAllFirstPage() {
+    int limit = 5;
+    List<TrackSort> trackSort = trackSortList();
+    List<Sort.Order> sortOrders =
+        trackSort.stream().map(TrackSort::getSortOrder).collect(Collectors.toList());
+    sortOrders.add(TrackSort.ID_ASC.getSortOrder());
+    Pageable pageable = PageRequest.of(0, limit, Sort.by(sortOrders));
+    BooleanExpression predicates = Expressions.asBoolean(true).isTrue();
+    when(trackRepository.findAll(predicates, pageable)).thenReturn(pageTracks(9));
+    List <Track> trackList = trackService.findAll(limit, null, trackSort, null);
     assertNotNull(trackList);
-    assertEquals(trackList, trackList());
+    assertEquals(trackList, trackList(9));
   }
 
   @Test
-  void update() {
-    when(trackRepository.findById(1L)).thenReturn(optionalTrack());
-    when(trackRepository.save(trackUpdate())).thenReturn(optionalTrackUpdate().orElse(null));
-    Track trackUpdate = trackService.findById(1L);
-    trackUpdate.setTitle("Track 2");
-    Track track = trackService.create(trackUpdate);
-    assertNotNull(track);
-    assertNotNull(track.getId());
-    assertEquals(track.getTitle(), "Track 2");
-
+  void findAllWithCursor() {
+    int limit = 4;
+    Long cursor = 4L;
+    List<TrackSort> trackSort = trackSortList();
+    List<Sort.Order> sortOrders =
+        trackSort.stream().map(TrackSort::getSortOrder).collect(Collectors.toList());
+    sortOrders.add(TrackSort.ID_ASC.getSortOrder());
+    Page<Track> page = pageTracks(3);
+    Pageable pageable = PageRequest.of(0, limit, Sort.by(sortOrders));
+    BooleanExpression predicates = Expressions.asBoolean(true).isTrue();
+    predicates = predicates.and(QTrack.track.uploadTime.loe(OffsetDateTime.of(2021, 04, 21, 20, 15, 45, 34587500, ZoneOffset.of("+02:00"))))
+        .and(QTrack.track.id.ne(4L));
+    when(trackRepository.findAll(predicates, pageable)).thenReturn(page);
+    when(trackRepository.findById(cursor)).thenReturn(optionalCursorTrack(cursor));
+    List <Track> trackList = trackService.findAll(limit, cursor, trackSort, null);
+    assertNotNull(trackList);
+    assertEquals(trackList, page.toList());
   }
 
-  private Optional<Track> optionalTrack() {
+  private Optional<Track> optionalTrack(Long id) {
     final Track track = new Track();
-    track.setId(1L);
+    track.setId(id);
     track.setTitle("Track 1");
     track.setDescription("Description 1");
     return Optional.of(track);
-  }
-
-  private Optional<Track> optionalTrackUpdate() {
-    final Track track = new Track();
-    track.setId(1L);
-    track.setTitle("Track 2");
-    track.setDescription("Description 1");
-    return Optional.of(track);
-  }
-
-  private Track trackUpdate() {
-    final Track track = new Track();
-    track.setId(1L);
-    track.setTitle("Track 2");
-    track.setDescription("Description 1");
-    return track;
   }
 
   private Track trackInput() {
@@ -128,23 +136,39 @@ class TrackServiceTest {
     return track;
   }
 
-  private List<Track> trackList() {
+  private Optional<Track> optionalCursorTrack(Long id) {
+    final Track track = new Track();
+    track.setId(id);
+    track.setTitle("Track number: " + id);
+    track.setDescription("Super-track " + id);
+    track.setUploadTime(OffsetDateTime.of(2021, 04, 21, 20, 15, 45, 34587500, ZoneOffset.of("+02:00")));
+    return Optional.of(track);
+  }
+
+  private Page<Track> pageTracks(int max){
+    List<Track> listTracks = trackList(max);
+    return new PageImpl<Track>(listTracks);
+  }
+
+  private List<TrackSort> trackSortList(){
+    final List<TrackSort> trackSort = new ArrayList<>();
+    trackSort.add(TrackSort.UPLOAD_TIME_DESC);
+    return trackSort;
+  }
+
+  private List<Track> trackList(int max) {
     final List<Track> trackList = new ArrayList<Track>();
-    final Track trackOne = new Track();
-    final Track trackTwo = new Track();
-    final Track trackThree = new Track();
-    trackOne.setId(1L);
-    trackTwo.setId(2L);
-    trackThree.setId(3L);
-    trackOne.setTitle("Track 1");
-    trackTwo.setTitle("Track 2");
-    trackThree.setTitle("Track 3");
-    trackOne.setDescription("Description track 1");
-    trackTwo.setDescription("Description track 2");
-    trackThree.setDescription("Description track 3");
-    trackList.add(trackOne);
-    trackList.add(trackTwo);
-    trackList.add(trackThree);
+
+    for(int i = 1; i <= max; i++){
+      Track track = new Track();
+      track.setId((long) i);
+      track.setTitle("Track number: " + i);
+      track.setDescription("Super-track " + i);
+      track.setUploadTime(OffsetDateTime.now());
+
+      trackList.add(track);
+    }
+
     return trackList;
   }
 }

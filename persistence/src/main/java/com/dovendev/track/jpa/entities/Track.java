@@ -1,5 +1,8 @@
 package com.dovendev.track.jpa.entities;
 
+import java.util.Arrays;
+import java.util.Optional;
+import org.springframework.beans.BeanUtils;
 import java.lang.reflect.Field;
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -203,5 +206,30 @@ public class Track {
     final Field fieldObject =
         ReflectionUtils.findField(Track.class, (field) -> field.getName().equals(fieldName));
     return fieldObject != null ? fieldObject.get(this) : null;
+  }
+
+  public static Track merge(Track source, Track target){
+
+    if (source.getActivity() != null) {
+      target.setActivity(source.getActivity());
+    }
+
+    if (source.getLinks() != null) {
+      target.setLinks(source.getLinks());
+    }
+
+    if (source.getDescription() != null) {
+      target.setDescription(source.getDescription());
+    }
+
+    if (source.getTime() != null) {
+      target.setTime(source.getTime());
+    }
+
+    if (source.getTitle() != null) {
+      target.setTitle(source.getTitle());
+    }
+
+    return target;
   }
 }
