@@ -16,6 +16,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -164,7 +165,7 @@ class TrackServiceTest {
       track.setId((long) i);
       track.setTitle("Track number: " + i);
       track.setDescription("Super-track " + i);
-      track.setUploadTime(OffsetDateTime.now());
+      track.setUploadTime(OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES));
 
       trackList.add(track);
     }
