@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  mariadb_trackfinder:
+    image: 'mariadb/server:10.4'
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    networks:
+      backend:
+    expose:
+      - '3306'
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=trackfinder
+      - MYSQL_USER=trackfinder
+      - MYSQL_PASSWORD=trackfinder
+
+  springboot-track:
+    image: 'trackdev/trackfinder'
+    networks:
+      backend:
+    ports:
+      - '8080:8080'
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb_trackfinder:3306/trackfinder?autoReconnect=true
+      SPRING_DATASOURCE_USERNAME: 'trackfinder'
+      SPRING_DATASOURCE_PASSWORD: 'trackfinder'
+    depends_on:
+      mariadb_trackfinder:
+        condition: service_started
+
+networks:
+  backend:
+
+volumes:
+  db_data: {}
+
+
