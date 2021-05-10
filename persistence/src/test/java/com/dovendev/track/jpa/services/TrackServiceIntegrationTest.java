@@ -23,7 +23,7 @@ public class TrackServiceIntegrationTest {
   void update() {
     Track trackToUpdate = trackUpdate();
     Optional<Track> track = trackService.update(trackToUpdate);
-    assertTrue(((Optional<?>) track).isPresent());
+    assertTrue(track.isPresent());
     assertNotNull(track.get().getId());
     assertEquals(track.get().getTitle(), "Track 2");
     assertEquals(track.get().getDescription(), "Facile escursione ad anello con partenza da Case Bertot. Si scende fino al torrente per attraversarlo e risalire dal versante oppposto della gola. Lungo la via del rientro si passa attraverso il Bus del Buson, insenatura scavata dal vecchio flusso del torrente, successivamente deviato, che permette di ammirare conformazioni rocciose tipiche di una gola scavata dall''acqua, di rilevanza storica per le tracce fossili che ne sono emerse");

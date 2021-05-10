@@ -4,22 +4,19 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import graphql.ExecutionInput;
 import graphql.GraphQL;
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 @RestController
 public class GraphQLController {
-
 
   private final GraphQL graphql;
   private final ObjectMapper objectMapper;
@@ -31,7 +28,6 @@ public class GraphQLController {
   }
 
   @RequestMapping(value = "/graphql", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  @CrossOrigin
   public Map<String, Object> graphqlGET(@RequestParam("query") String query,
       @RequestParam(value = "operationName", required = false) String operationName,
       @RequestParam("variables") String variablesJson
@@ -47,7 +43,6 @@ public class GraphQLController {
 
   @SuppressWarnings("unchecked")
   @RequestMapping(value = "/graphql", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-  @CrossOrigin
   public Map<String, Object> graphql(@RequestBody Map<String, Object> body) {
     String query = (String) body.get("query");
     if (query == null) {

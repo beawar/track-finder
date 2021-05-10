@@ -1,7 +1,8 @@
 package com.dovendev.track.graphql.datafetchers;
 
+import static com.dovendev.track.graphql.utils.Utils.parseId;
+
 import com.dovendev.track.graphql.connection.CursorUtil;
-import com.dovendev.track.graphql.utils.Utils;
 import com.dovendev.track.jpa.entities.Track;
 import com.dovendev.track.jpa.entities.TrackSort;
 import com.dovendev.track.jpa.services.TrackService;
@@ -27,7 +28,7 @@ public class TrackDataFetcher {
   public DataFetcher<Track> getTrack() {
     return dataFetchingEnvironment -> {
       String trackId = dataFetchingEnvironment.getArgument("id");
-      return trackService.findById(Long.parseLong(trackId));
+      return trackService.findById(parseId(trackId));
     };
   }
 
@@ -42,14 +43,14 @@ public class TrackDataFetcher {
   public DataFetcher<Track> deleteTrack() {
     return dataFetchingEnvironment -> {
       String trackId = dataFetchingEnvironment.getArgument("id");
-      return trackService.delete(trackService.findById(Long.parseLong(trackId)));
+      return trackService.delete(parseId(trackId));
     };
   }
 
   public DataFetcher<Connection<Track>> getTracks() {
     return dataFetchingEnvironment -> {
       int limit = dataFetchingEnvironment.getArgument("limit");
-      final Long cursor = Utils.parseId(dataFetchingEnvironment.getArgument("after"));
+      final Long cursor = parseId(dataFetchingEnvironment.getArgument("after"));
       String searchText = dataFetchingEnvironment.getArgument("searchText");
       List<String> sortNames = dataFetchingEnvironment.getArgument("sort");
 
