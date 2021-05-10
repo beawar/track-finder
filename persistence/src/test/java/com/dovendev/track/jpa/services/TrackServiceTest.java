@@ -64,7 +64,9 @@ class TrackServiceTest {
 
   @Test
   void delete() {
-    doNothing().when(trackRepository).delete(trackDelete());
+    final Track trackParam = trackDelete();
+    when(trackRepository.findById(trackParam.getId())).thenReturn(Optional.of(trackParam));
+    doNothing().when(trackRepository).delete(trackParam);
     Track track = trackService.delete(trackDelete().getId());
     assertNotNull(track);
     assertEquals(track, trackDelete());
@@ -73,10 +75,11 @@ class TrackServiceTest {
 
   @Test
   void deleteWithNull() {
+    when(trackRepository.findById(null)).thenReturn(null);
     doNothing().when(trackRepository).delete(trackDelete());
     Track track = trackService.delete(null);
     assertNull(track);
-    verify(trackRepository, times(1)).delete(null);
+    verify(trackRepository, times(0)).delete(null);
   }
 
   @Test

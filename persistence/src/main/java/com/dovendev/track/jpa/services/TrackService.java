@@ -33,7 +33,10 @@ public class TrackService {
   }
 
   public Track findById(Long id) {
-    return trackRepository.findById(id).orElse(null);
+    if (id != null) {
+      return trackRepository.findById(id).orElse(null);
+    }
+    return null;
   }
 
   public Track delete(Long id) {
@@ -91,9 +94,11 @@ public class TrackService {
     Optional<Track> trackToUpdate = trackRepository.findById(track.getId());
     if(trackToUpdate.isPresent()){
       Track updateTrack = Track.merge(track, trackToUpdate.get());
-      final Track result = trackRepository.save(updateTrack);
+      Track result = trackRepository.save(updateTrack);
+      // TODO: check why test with refresh does not work
       // refresh saved entity to return all data (with activity full loaded)
-      trackRepository.refresh(result);
+      // trackRepository.refresh(result);
+      result = findById(result.getId());
       return Optional.of(result);
     }
     return trackToUpdate;
