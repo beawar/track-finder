@@ -9,4 +9,7 @@ open module track.finder.persistence {
   requires spring.boot;
   requires spring.boot.autoconfigure;
   requires org.mockito;
+  requires spring.data.commons;
+  requires querydsl.core;
+  requires spring.test;
 }

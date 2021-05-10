@@ -24,40 +24,40 @@ import org.springframework.stereotype.Component;
 public class TrackDataFetcher {
   @Autowired private TrackService trackService;
 
-  public DataFetcher<Track> getTrackDataFetcher() {
+  public DataFetcher<Track> getTrack() {
     return dataFetchingEnvironment -> {
       String trackId = dataFetchingEnvironment.getArgument("id");
       return trackService.findById(Long.parseLong(trackId));
     };
   }
 
-  public DataFetcher<Track> createTrackDataFetcher() {
+  public DataFetcher<Track> createTrack() {
     return dataFetchingEnvironment -> {
       Map<String, Object> trackInputMap = dataFetchingEnvironment.getArgument("track");
       Track track = Track.fromMap(trackInputMap);
-      return trackService.save(track);
+      return trackService.create(track);
     };
   }
 
-  public DataFetcher<Track> deleteTrackDataFetcher() {
+  public DataFetcher<Track> deleteTrack() {
     return dataFetchingEnvironment -> {
       String trackId = dataFetchingEnvironment.getArgument("id");
       return trackService.delete(trackService.findById(Long.parseLong(trackId)));
     };
   }
 
-  public DataFetcher<Connection<Track>> getTracksDataFetcher() {
+  public DataFetcher<Connection<Track>> getTracks() {
     return dataFetchingEnvironment -> {
       int limit = dataFetchingEnvironment.getArgument("limit");
       final Long cursor = Utils.parseId(dataFetchingEnvironment.getArgument("after"));
       String searchText = dataFetchingEnvironment.getArgument("searchText");
       List<String> sortNames = dataFetchingEnvironment.getArgument("sort");
 
-      List<TrackSort> trackSorts = new ArrayList<TrackSort>();
+      List<TrackSort> trackSorts = new ArrayList<>();
       if (sortNames!=null && !sortNames.isEmpty()) {
           trackSorts.addAll(sortNames.stream()
               .filter(sortName -> !sortName.isBlank())
-              .map(sortName -> TrackSort.valueOf(sortName)).collect(Collectors.toList()));
+              .map(TrackSort::valueOf).collect(Collectors.toList()));
       } else {
           // if sort list is empty, default sort is by upload time desc
           trackSorts.add(TrackSort.UPLOAD_TIME_DESC);
@@ -85,4 +85,13 @@ public class TrackDataFetcher {
   public List<Track> getTrackList(int limit, Long cursor, List<TrackSort> trackSorts, String searchText) {
     return trackService.findAll(limit, cursor, trackSorts, searchText);
   }
+
+    public DataFetcher<Track> updateTrack() {
+        return dataFetchingEnvironment -> {
+            Map<String, Object> trackUpdateMap = dataFetchingEnvironment.getArgument("track");
+            Track track = Track.fromMap(trackUpdateMap);
+            track.setId(Long.valueOf(dataFetchingEnvironment.getArgument("id")));
+            return trackService.update(track).orElse(null);
+        };
+    }
 }

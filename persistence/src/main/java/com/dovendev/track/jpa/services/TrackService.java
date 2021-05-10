@@ -9,6 +9,7 @@ import com.dovendev.track.jpa.repositories.TrackRepository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +25,7 @@ public class TrackService {
     this.trackRepository = trackRepository;
   }
 
-  public Track save(Track track) {
+  public Track create(Track track) {
     Track savedTrack = trackRepository.save(track);
     // refresh saved entity to return all data (with activity full loaded)
     trackRepository.refresh(savedTrack);
@@ -81,5 +82,14 @@ public class TrackService {
 
     Page<Track> page = trackRepository.findAll(predicates, pageable);
     return page.toList();
+  }
+
+  public Optional<Track> update(Track track){
+    Optional<Track> trackToUpdate = trackRepository.findById(track.getId());
+    if(trackToUpdate.isPresent()){
+      Track updateTrack = Track.merge(track, trackToUpdate.get());
+      return Optional.of(trackRepository.save(updateTrack));
+    }
+    return trackToUpdate;
   }
 }

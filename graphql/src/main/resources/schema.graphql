@@ -15,6 +15,7 @@ type Mutation {
     #track mutation
     createTrack(track: TrackInput!): Track!
     deleteTrack(id: ID!): Track
+    updateTrack(id: ID!, track: TrackInput!): Track!
 
     #link mutation
     createLink(track: TrackInput!): Track!
