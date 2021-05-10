@@ -36,8 +36,11 @@ public class TrackService {
     return trackRepository.findById(id).orElse(null);
   }
 
-  public Track delete(Track track) {
-    trackRepository.delete(track);
+  public Track delete(Long id) {
+    Track track = findById(id);
+    if (track != null) {
+      trackRepository.delete(track);
+    }
     return track;
   }
 
@@ -88,7 +91,10 @@ public class TrackService {
     Optional<Track> trackToUpdate = trackRepository.findById(track.getId());
     if(trackToUpdate.isPresent()){
       Track updateTrack = Track.merge(track, trackToUpdate.get());
-      return Optional.of(trackRepository.save(updateTrack));
+      final Track result = trackRepository.save(updateTrack);
+      // refresh saved entity to return all data (with activity full loaded)
+      trackRepository.refresh(result);
+      return Optional.of(result);
     }
     return trackToUpdate;
   }

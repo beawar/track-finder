@@ -1,8 +1,5 @@
 package com.dovendev.track.jpa.entities;
 
-import java.util.Arrays;
-import java.util.Optional;
-import org.springframework.beans.BeanUtils;
 import java.lang.reflect.Field;
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -45,7 +42,7 @@ public class Track {
   @OrderBy("name")
   private Activity activity;
 
-  @OneToMany(cascade = CascadeType.ALL)
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   @JoinColumn(name = "trackId", referencedColumnName = "id")
   private List<TrackLink> links;
 
@@ -208,14 +205,15 @@ public class Track {
     return fieldObject != null ? fieldObject.get(this) : null;
   }
 
-  public static Track merge(Track source, Track target){
+  public static Track merge(Track source, Track target) {
 
     if (source.getActivity() != null) {
       target.setActivity(source.getActivity());
     }
 
     if (source.getLinks() != null) {
-      target.setLinks(source.getLinks());
+      target.getLinks().clear();
+      target.getLinks().addAll(source.getLinks());
     }
 
     if (source.getDescription() != null) {
