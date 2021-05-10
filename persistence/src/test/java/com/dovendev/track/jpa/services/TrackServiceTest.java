@@ -65,7 +65,7 @@ class TrackServiceTest {
   @Test
   void delete() {
     doNothing().when(trackRepository).delete(trackDelete());
-    Track track = trackService.delete(trackDelete());
+    Track track = trackService.delete(trackDelete().getId());
     assertNotNull(track);
     assertEquals(track, trackDelete());
     verify(trackRepository).delete(trackDelete());
